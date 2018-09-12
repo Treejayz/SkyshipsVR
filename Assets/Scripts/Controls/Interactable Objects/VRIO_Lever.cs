@@ -9,7 +9,10 @@ public class VRIO_Lever : VRInteractableObject
     public float maxZ;
     public float[] anchorPoints;
 
-    float offsetZ;
+    [HideInInspector]
+    public float value = 0; // ranges from -1 to 1
+
+    float offsetZ = 0;
 
     bool grabbed = false;
     GameObject currentController;
@@ -21,8 +24,8 @@ public class VRIO_Lever : VRInteractableObject
         {
             Release(currentController);
         }
-        //offsetZ = console.transform.InverseTransformPoint(currentController.transform.position).z - transform.localPosition.z;
-
+        offsetZ = console.transform.InverseTransformPoint(controller.transform.position).z - transform.localPosition.z;
+        StopCoroutine("Snap");
         currentController = controller;
         grabbed = true;
     }
@@ -45,16 +48,18 @@ public class VRIO_Lever : VRInteractableObject
 
     private void Update()
     {
+        // If we are grabbing something, set the z 
         if (grabbed)
         {
-            float zPos = console.transform.InverseTransformPoint(currentController.transform.position).z;
-            //Get the lever's current local position
+            float zPos = console.transform.InverseTransformPoint(currentController.transform.position).z - offsetZ;
             Vector3 position = transform.localPosition;
-            //Set lever's z position to the Z of the converted controller position
-            //Clamp it so the lever doesn't go too far either way
             position.z = Mathf.Clamp(zPos, minZ, maxZ);
-            //Set lever to new position
             transform.localPosition = position;
+            if (anchorPoints.Length == 0)
+            {
+                value = ((maxZ - position.z) / (maxZ - minZ)) * -2 + 1;
+                print (value);
+            }
         }
     }
 
@@ -71,6 +76,8 @@ public class VRIO_Lever : VRInteractableObject
             }
         }
 
+        value = ((maxZ - anchorpoint) / (maxZ - minZ)) * -2 + 1;
+        print(value);
         Vector3 position;
 
         while (dist > .01f)
