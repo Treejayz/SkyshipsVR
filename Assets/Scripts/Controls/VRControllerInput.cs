@@ -7,6 +7,9 @@ public class VRControllerInput : MonoBehaviour {
     [HideInInspector]
     public GameObject currentHeld;
 
+    Vector3 regularTriggerSize;
+    Vector3 holdingTriggerSize;
+
     protected SteamVR_TrackedObject trackedObj;
     public SteamVR_Controller.Device device
     {
@@ -20,6 +23,8 @@ public class VRControllerInput : MonoBehaviour {
     {
         //Instantiate lists
         trackedObj = GetComponent<SteamVR_TrackedObject>();
+        regularTriggerSize = GetComponent<BoxCollider>().size;
+        holdingTriggerSize = (GetComponent<BoxCollider>().size) * 2.5f;
     }
 
     void OnTriggerStay(Collider collider)
@@ -34,6 +39,7 @@ public class VRControllerInput : MonoBehaviour {
                 //Pick up object
                 interactable.Grab(this.gameObject);
                 currentHeld = collider.gameObject;
+                GetComponent<BoxCollider>().size = holdingTriggerSize;
             }
             if (device.GetHairTriggerUp())
             {
@@ -42,6 +48,7 @@ public class VRControllerInput : MonoBehaviour {
                 interactable.Release(this.gameObject);
                 if (currentHeld != interactable && currentHeld != null)
                 {
+                    GetComponent<BoxCollider>().size = regularTriggerSize;
                     currentHeld.GetComponent<VRInteractableObject>().Release(this.gameObject);
                     currentHeld = null;
                 }
@@ -49,12 +56,21 @@ public class VRControllerInput : MonoBehaviour {
         }
     }
 
+    private void OnTriggerExit(Collider other)
+    {
+        if (currentHeld == other.gameObject)
+        {
+            currentHeld.GetComponent<VRInteractableObject>().Release(this.gameObject);
+            GetComponent<BoxCollider>().size = regularTriggerSize;
+        }
+    }
 
     private void Update()
     {
         if (device.GetHairTriggerUp() && currentHeld != null)
         {
             currentHeld.GetComponent<VRInteractableObject>().Release(this.gameObject);
+            GetComponent<BoxCollider>().size = regularTriggerSize;
             currentHeld = null;
         }
     }

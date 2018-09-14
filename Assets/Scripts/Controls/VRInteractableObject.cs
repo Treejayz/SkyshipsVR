@@ -4,14 +4,27 @@ using UnityEngine;
 
 public class VRInteractableObject : MonoBehaviour {
 
+    [HideInInspector]
+    public bool grabbed = false;
+    [HideInInspector]
+    public GameObject currentController;
 
     public virtual void Grab(GameObject controller)
     {
-        //Empty. Overriden method only. 
+        if (grabbed)
+        {
+            Release(currentController);
+        }
+        currentController = controller;
+        grabbed = true;
     }
     public virtual void Release(GameObject controller)
     {
-        //Empty. Overriden method only. 
+        if (controller == currentController)
+        {
+            currentController = null;
+            grabbed = false;
+        }
     }
 
 }

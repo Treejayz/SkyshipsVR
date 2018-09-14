@@ -14,36 +14,25 @@ public class VRIO_Lever : VRInteractableObject
 
     float offsetZ = 0;
 
-    bool grabbed = false;
-    GameObject currentController;
-
     public override void Grab(GameObject controller)
     {
         base.Grab(controller);
-        if (grabbed)
-        {
-            Release(currentController);
-        }
         offsetZ = console.transform.InverseTransformPoint(controller.transform.position).z - transform.localPosition.z;
         StopCoroutine("Snap");
-        currentController = controller;
-        grabbed = true;
     }
 
     public override void Release(GameObject controller)
     {
-        base.Release(controller);
 
         if (controller == currentController)
         {
-            currentController = null;
-            grabbed = false;
             if (anchorPoints.Length != 0)
             {
                 StopCoroutine("Snap");
                 StartCoroutine("Snap");
             }
         }
+        base.Release(controller);
     }
 
     private void Update()
@@ -58,7 +47,19 @@ public class VRIO_Lever : VRInteractableObject
             if (anchorPoints.Length == 0)
             {
                 value = ((maxZ - position.z) / (maxZ - minZ)) * -2 + 1;
-                print (value);
+            } else
+            {
+                float anchorpoint = anchorPoints[0];
+                float dist = 99999f;
+                foreach (float anchor in anchorPoints)
+                {
+                    if (Mathf.Abs(transform.localPosition.z - anchor) < dist)
+                    {
+                        anchorpoint = anchor;
+                        dist = Mathf.Abs(transform.localPosition.z - anchor);
+                    }
+                }
+                value = ((maxZ - anchorpoint) / (maxZ - minZ)) * -2 + 1;
             }
         }
     }
@@ -77,10 +78,9 @@ public class VRIO_Lever : VRInteractableObject
         }
 
         value = ((maxZ - anchorpoint) / (maxZ - minZ)) * -2 + 1;
-        print(value);
         Vector3 position;
 
-        while (dist > .01f)
+        while (dist > .03f)
         {
             position = transform.localPosition;
             position.z = Mathf.Lerp(position.z, anchorpoint, .2f);
