@@ -13,6 +13,7 @@ public class VRIO_Button : VRInteractableObject
     {
         base.Grab(controller);
         pressed = true;
+        SteamVR_Controller.Input((int)controller.GetComponent<SteamVR_TrackedObject>().index).TriggerHapticPulse(50000);
     }
 
     public override void Release(GameObject controller)

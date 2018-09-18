@@ -16,6 +16,8 @@ public class VRIO_Wheel : VRInteractableObject
 
     Vector3 prevHandPosition;
 
+    int knotches = 0;
+
     public override void Grab(GameObject controller)
     {
         base.Grab(controller);
@@ -46,6 +48,7 @@ public class VRIO_Wheel : VRInteractableObject
             float angularDelta = (Mathf.Atan2(currentHandPosition.z, currentHandPosition.y) - Mathf.Atan2(prevHandPosition.z, prevHandPosition.y)) * Mathf.Rad2Deg;
             prevHandPosition = currentHandPosition;
             turnAmount += angularDelta;
+            turnAmount = Mathf.Clamp(turnAmount, numTurns * -360f, numTurns * 360f);
             angularVelocity = angularDelta * (1f / Time.deltaTime);
             if (angularDelta > 180f)
             {
@@ -59,6 +62,12 @@ public class VRIO_Wheel : VRInteractableObject
             if (turnAmount < 360f * numTurns && turnAmount > -360f * numTurns)
             {
                 WheelMesh.transform.localRotation = Quaternion.Euler(turnAmount, 0f, 0f);
+            }
+
+            if ((int)turnAmount / 45 != knotches)
+            {
+                knotches = (int)turnAmount / 45;
+                SteamVR_Controller.Input((int)currentController.GetComponent<SteamVR_TrackedObject>().index).TriggerHapticPulse(5000);
             }
 
         }
