@@ -5,6 +5,10 @@ using UnityEngine;
 public class VRIO_Lever : VRInteractableObject
 {
     public Transform console;
+
+    public Transform grabber;
+    public float grabberAngle;
+
     public float minZ;
     public float maxZ;
     public float[] anchorPoints;
@@ -18,7 +22,9 @@ public class VRIO_Lever : VRInteractableObject
     {
         base.Grab(controller);
         offsetZ = console.transform.InverseTransformPoint(controller.transform.position).z - transform.localPosition.z;
-        StopCoroutine("Snap");
+        StopAllCoroutines();
+        StartCoroutine("Press");
+
     }
 
     public override void Release(GameObject controller)
@@ -28,11 +34,17 @@ public class VRIO_Lever : VRInteractableObject
         {
             if (anchorPoints.Length != 0)
             {
-                StopCoroutine("Snap");
+                StopAllCoroutines();
                 StartCoroutine("Snap");
+                StartCoroutine("UnPress");
             }
         }
         base.Release(controller);
+    }
+
+    private void Start()
+    {
+        StartCoroutine("Snap");
     }
 
     private void Update()
@@ -91,6 +103,28 @@ public class VRIO_Lever : VRInteractableObject
         position.z = anchorpoint;
         transform.localPosition = position;
 
+    }
+
+
+    IEnumerator Press()
+    {
+        while (grabber.localRotation.eulerAngles.x < grabberAngle - (grabberAngle * 0.01f))
+        {
+            grabber.localRotation = Quaternion.Euler(Mathf.Lerp(grabber.localRotation.eulerAngles.x, grabberAngle, .2f), 0f, 0f);
+            yield return new WaitForEndOfFrame();
+        }
+        grabber.localRotation = Quaternion.Euler(grabberAngle, 0f, 0f);
+
+    }
+
+    IEnumerator UnPress()
+    {
+        while (grabber.localRotation.eulerAngles.x > (grabberAngle * 0.01f))
+        {
+            grabber.localRotation = Quaternion.Euler(Mathf.Lerp(grabber.localRotation.eulerAngles.x, 0f, .2f), 0f, 0f);
+            yield return new WaitForEndOfFrame();
+        }
+        grabber.localRotation = Quaternion.Euler(0f, 0f, 0f);
     }
 
 }

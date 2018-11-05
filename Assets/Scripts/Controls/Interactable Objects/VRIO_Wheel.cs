@@ -75,7 +75,6 @@ public class VRIO_Wheel : VRInteractableObject
 
     IEnumerator Snap()
     {
-        print(angularVelocity);
         bool returning = true;
 
         while (returning)
