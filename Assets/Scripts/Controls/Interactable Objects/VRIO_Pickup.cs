@@ -13,8 +13,8 @@ public class VRIO_Pickup : VRInteractableObject
         base.Grab(controller);
         prevPos = controller.transform.position;
         FixedJoint fx = controller.AddComponent<FixedJoint>();
-        fx.breakForce = 20000;
-        fx.breakTorque = 20000;
+        fx.breakForce = 500;
+        fx.breakTorque = 500;
         fx.connectedBody = GetComponent<Rigidbody>();
     }
 

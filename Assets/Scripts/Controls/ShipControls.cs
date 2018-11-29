@@ -185,11 +185,11 @@ public class ShipControls : MonoBehaviour {
         {
             if (turnSpeed - targetTurn < .5f)
             {
-                turnSpeed += ((turnSpeed - targetTurn) / 0.5f) * maxTurnAccel * Time.deltaTime * (forwardSpeed / 3f);
+                turnSpeed -= ((turnSpeed - targetTurn) / 0.5f) * maxTurnAccel * Time.deltaTime * (forwardSpeed / 3f);
             }
             else
             {
-                turnSpeed += maxTurnAccel * Time.deltaTime * (forwardSpeed / 3f);
+                turnSpeed -= maxTurnAccel * Time.deltaTime * (forwardSpeed / 3f);
             }
         }
         turnSpeed = Mathf.Clamp(turnSpeed, maxTurnSpeed * -1, maxTurnSpeed);
@@ -248,15 +248,18 @@ public class ShipControls : MonoBehaviour {
 
     private void OnCollisionEnter(Collision collision)
     {
-        Vector3 normal = collision.contacts[0].normal;
-        for (int i = 0; i < collision.contacts.Length; i++)
+        if (collision.gameObject.tag == "Untagged")
         {
-            normal += collision.contacts[i].normal;
+            Vector3 normal = collision.contacts[0].normal;
+            for (int i = 0; i < collision.contacts.Length; i++)
+            {
+                normal += collision.contacts[i].normal;
+            }
+            normal.Normalize();
+
+
+            Collide(normal);
         }
-        normal.Normalize();
-
-
-        Collide(normal);
     }
 
     public void Collide(Vector3 hitNormal)
