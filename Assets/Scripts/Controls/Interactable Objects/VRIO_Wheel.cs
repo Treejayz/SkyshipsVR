@@ -67,7 +67,8 @@ public class VRIO_Wheel : VRInteractableObject
             if ((int)turnAmount / 45 != knotches)
             {
                 knotches = (int)turnAmount / 45;
-                SteamVR_Controller.Input((int)currentController.GetComponent<SteamVR_TrackedObject>().index).TriggerHapticPulse(5000);
+                GetComponent<AudioSource>().Play();
+                SteamVR_Controller.Input((int)currentController.GetComponent<SteamVR_TrackedObject>().index).TriggerHapticPulse(3000);
             }
 
         }
@@ -148,6 +149,13 @@ public class VRIO_Wheel : VRInteractableObject
                 turnAmount = -360f * numTurns;
                 angularVelocity = 0f;
             }
+
+            if ((int)turnAmount / 45 != knotches)
+            {
+                knotches = (int)turnAmount / 45;
+                GetComponent<AudioSource>().Play();
+            }
+
             WheelMesh.transform.localRotation = Quaternion.Euler(turnAmount, 0f, 0f);
             yield return new WaitForEndOfFrame();
         }
@@ -159,6 +167,12 @@ public class VRIO_Wheel : VRInteractableObject
             while (turnAmount > 180f)
             {
                 turnAmount -= 360f * Time.deltaTime;
+
+                if ((int)turnAmount / 45 != knotches)
+                {
+                    knotches = (int)turnAmount / 45;
+                    GetComponent<AudioSource>().Play();
+                }
                 WheelMesh.transform.localRotation = Quaternion.Euler(turnAmount, 0f, 0f);
                 yield return new WaitForEndOfFrame();
             }
@@ -166,6 +180,11 @@ public class VRIO_Wheel : VRInteractableObject
             {
                 float currentTurn = 360f * (turnAmount / 180f) * Time.deltaTime;
                 turnAmount -= currentTurn;
+                if ((int)turnAmount / 45 != knotches)
+                {
+                    knotches = (int)turnAmount / 45;
+                    GetComponent<AudioSource>().Play();
+                }
                 WheelMesh.transform.localRotation = Quaternion.Euler(turnAmount, 0f, 0f);
                 yield return new WaitForEndOfFrame();
             }
@@ -174,6 +193,11 @@ public class VRIO_Wheel : VRInteractableObject
             while (turnAmount < -180f)
             {
                 turnAmount += 360f * Time.deltaTime;
+                if ((int)turnAmount / 45 != knotches)
+                {
+                    knotches = (int)turnAmount / 45;
+                    GetComponent<AudioSource>().Play();
+                }
                 WheelMesh.transform.localRotation = Quaternion.Euler(turnAmount, 0f, 0f);
                 yield return new WaitForEndOfFrame();
             }
@@ -181,6 +205,11 @@ public class VRIO_Wheel : VRInteractableObject
             {
                 float currentTurn = 360f * (turnAmount / -180f) * Time.deltaTime;
                 turnAmount += currentTurn;
+                if ((int)turnAmount / 45 != knotches)
+                {
+                    knotches = (int)turnAmount / 45;
+                    GetComponent<AudioSource>().Play();
+                }
                 WheelMesh.transform.localRotation = Quaternion.Euler(turnAmount, 0f, 0f);
                 yield return new WaitForEndOfFrame();
             }

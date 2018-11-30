@@ -41,6 +41,10 @@ public class ShipControls : MonoBehaviour {
     //button stuff
     float rotationalVelocity;
 
+
+    //Sound stuff
+    float pitch = 0f;
+
     private void Update()
     {
         // New Movement Test
@@ -48,6 +52,16 @@ public class ShipControls : MonoBehaviour {
         // First calculate acceleration in the direction we are facing
 
         Vector3 acceleration = transform.right * ((forward.value + 1f)/2f) * forwardAcceleration;
+
+        if (pitch < ((forward.value + 1f) / 2f))
+        {
+            pitch += Time.deltaTime * .3f;
+        } else if (pitch > ((forward.value + 1f) / 2f))
+        {
+            pitch -= Time.deltaTime * .3f;
+        }
+        GetComponent<AudioSource>().pitch = pitch;
+
 
         velocity += acceleration * Time.deltaTime;
 

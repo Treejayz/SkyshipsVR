@@ -59,6 +59,7 @@ public class VRIO_ChestLid : VRInteractableObject
                 }
                 else
                 {
+                    GetComponent<AudioSource>().Play();
                     angularSpeed *= -0.8f;
                 }
             }

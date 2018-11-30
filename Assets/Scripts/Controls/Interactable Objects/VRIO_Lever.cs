@@ -16,6 +16,8 @@ public class VRIO_Lever : VRInteractableObject
     [HideInInspector]
     public float value = 0; // ranges from -1 to 1
 
+    int anchorIndex = 0;
+
     float offsetZ = 0;
 
     public override void Grab(GameObject controller)
@@ -63,13 +65,23 @@ public class VRIO_Lever : VRInteractableObject
             {
                 float anchorpoint = anchorPoints[0];
                 float dist = 99999f;
+                int temp = anchorIndex;
+                int i = 0;
                 foreach (float anchor in anchorPoints)
                 {
                     if (Mathf.Abs(transform.localPosition.z - anchor) < dist)
                     {
+                        anchorIndex = i;
                         anchorpoint = anchor;
                         dist = Mathf.Abs(transform.localPosition.z - anchor);
                     }
+                    i += 1;
+                }
+                if (anchorIndex != temp)
+                {
+                    SteamVR_Controller.Input((int)currentController.GetComponent<SteamVR_TrackedObject>().index).TriggerHapticPulse(4000);
+                    GetComponent<AudioSource>().Play();
+
                 }
                 value = ((maxZ - anchorpoint) / (maxZ - minZ)) * -2 + 1;
             }
@@ -99,6 +111,7 @@ public class VRIO_Lever : VRInteractableObject
             transform.localPosition = position;
             yield return new WaitForEndOfFrame();
         }
+        GetComponent<AudioSource>().Play();
         position = transform.localPosition;
         position.z = anchorpoint;
         transform.localPosition = position;
