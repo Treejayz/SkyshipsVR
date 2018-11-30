@@ -26,6 +26,12 @@ ModelImporter:
     100040: Wheel
     100042: WheelBase
     100044: WheelConnector
+    100046: Crank
+    100048: CrankBase
+    100050: Handle
+    100052: Pole1
+    100054: SailCloth
+    100056: SailPivot
     400000: Button
     400002: Button 1
     400004: ButtonBase
@@ -49,6 +55,12 @@ ModelImporter:
     400040: Wheel
     400042: WheelBase
     400044: WheelConnector
+    400046: Crank
+    400048: CrankBase
+    400050: Handle
+    400052: Pole1
+    400054: SailCloth
+    400056: SailPivot
     2100000: BaseWood
     2100002: Trim
     2100004: ChestBase1
@@ -56,6 +68,7 @@ ModelImporter:
     2100008: WheelMat
     2100010: ChestTrim
     2100012: ControlDetail2
+    2100014: Sail
     2300000: Button
     2300002: Button 1
     2300004: ButtonBase
@@ -79,6 +92,12 @@ ModelImporter:
     2300040: Wheel
     2300042: WheelBase
     2300044: WheelConnector
+    2300046: Crank
+    2300048: CrankBase
+    2300050: Handle
+    2300052: Pole1
+    2300054: SailCloth
+    2300056: SailPivot
     3300000: Button
     3300002: Button 1
     3300004: ButtonBase
@@ -102,6 +121,12 @@ ModelImporter:
     3300040: Wheel
     3300042: WheelBase
     3300044: WheelConnector
+    3300046: Crank
+    3300048: CrankBase
+    3300050: Handle
+    3300052: Pole1
+    3300054: SailCloth
+    3300056: SailPivot
     4300000: Boat_Base
     4300002: Console
     4300004: WheelBase
@@ -125,6 +150,12 @@ ModelImporter:
     4300040: Pole
     4300042: ChestBase
     4300044: ChestLid
+    4300046: CrankBase
+    4300048: Crank
+    4300050: Handle
+    4300052: SailPivot
+    4300054: Pole1
+    4300056: SailCloth
   externalObjects: {}
   materials:
     importMaterials: 1

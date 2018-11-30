@@ -7,12 +7,15 @@ public class ShipControls : MonoBehaviour {
     public VRIO_Lever forward;
     public VRIO_Lever up;
     public VRIO_Wheel turn;
-    public VRIO_Button rotateLeft;
-    public VRIO_Button rotateRight;
+    public VRIO_Button buttonDown;
+    public VRIO_Button buttonUp;
+    public VRIO_Crank rotate;
     public VRIO_Joystick strafe;
 
     public float windForce;
     public Vector3 windDirection;
+    public GameObject mast;
+    public GameObject sail;
 
 
     Vector3 strafeVelocity;
@@ -25,12 +28,12 @@ public class ShipControls : MonoBehaviour {
     float maxVelocity = 4f;
 
     // Forward/Backward variables
-    float forwardAcceleration = 1.5f;
+    float forwardAcceleration = 2f;
     float dampenSpeed = .5f;
 
     // Vertical variables
     float verticalVelocity = 0;
-    float maxVerticalVelocity = 2f;
+    float maxVerticalVelocity = .3f;
     float maxVerticalAcceleration = 1f;
 
     // turning variables
@@ -44,6 +47,18 @@ public class ShipControls : MonoBehaviour {
 
     //Sound stuff
     float pitch = 0f;
+
+
+    Vector3 min;
+
+    Vector3 max;
+
+    private void Start()
+    {
+        min = MainManager.minBounds;
+        max = MainManager.maxBounds;
+    }
+
 
     private void Update()
     {
@@ -70,6 +85,7 @@ public class ShipControls : MonoBehaviour {
         float angle = Vector3.Angle(windDirection.normalized, transform.right);
         velocity += transform.right * windForce * Time.deltaTime * (1f - (angle/180f)) * 0.5f;
         velocity += windDirection.normalized * windForce * Time.deltaTime * 0.5f;
+        /*
         float direction = Vector3.Cross(windDirection.normalized, transform.right).y;
         float targetTurnSpeed;
         if (angle < 30f)
@@ -114,7 +130,7 @@ public class ShipControls : MonoBehaviour {
                 turnSpeed -= windForce * Time.deltaTime;
             }
         }
-
+        */
 
 
         // Last we dampen the speed based on how fast we are going
@@ -123,65 +139,72 @@ public class ShipControls : MonoBehaviour {
 
         //if (velocity.magnitude > maxVelocity)
 
+
+        float forwardSpeed;
+        if (angle > 90) { forwardSpeed = -1f * velocity.magnitude * (1f - ((180f - angle) / 90f)); }
+        else { forwardSpeed = velocity.magnitude * (1f - (angle / 90f)); }
+
         // Now the same but for vertical
-        if (up.value > 0)
+        if (forwardSpeed != 0f)
         {
-            float targetVelocity = up.value * maxVerticalVelocity;
-            if (verticalVelocity >= .9f * targetVelocity)
+            if (up.value > 0)
             {
-                verticalVelocity += ((targetVelocity - verticalVelocity) / (targetVelocity * .1f)) * maxVerticalAcceleration * Time.deltaTime;
-            }
-            else
-            {
-                verticalVelocity += maxVerticalAcceleration * Time.deltaTime;
-            }
-        }
-        else if (up.value < 0)
-        {
-            float targetVelocity = up.value * maxVerticalVelocity;
-            if (verticalVelocity <= .9f * targetVelocity)
-            {
-                verticalVelocity -= ((targetVelocity - verticalVelocity) / (targetVelocity * .1f)) * maxVerticalAcceleration * Time.deltaTime;
-            }
-            else
-            {
-                verticalVelocity -= maxVerticalAcceleration * Time.deltaTime;
-            }
-        }
-        else
-        {
-            if (verticalVelocity > 0.05f)
-            {
-                if (verticalVelocity < 0.5f)
+                float targetVelocity = up.value * maxVerticalVelocity * forwardSpeed;
+                if (verticalVelocity >= .9f * targetVelocity)
                 {
-                    verticalVelocity -= (verticalVelocity / .5f) * dampenSpeed * Time.deltaTime;
+                    verticalVelocity += ((targetVelocity - verticalVelocity) / (targetVelocity * .1f)) * maxVerticalAcceleration * Time.deltaTime;
                 }
                 else
                 {
-                    verticalVelocity -= dampenSpeed * Time.deltaTime;
+                    verticalVelocity += maxVerticalAcceleration * Time.deltaTime;
                 }
             }
-            else if (verticalVelocity < -0.05f)
+            else if (up.value < 0)
             {
-                if (verticalVelocity > -0.5f)
+                float targetVelocity = up.value * maxVerticalVelocity * forwardSpeed;
+                if (verticalVelocity <= .9f * targetVelocity)
                 {
-                    verticalVelocity += (verticalVelocity / -.5f) * dampenSpeed * Time.deltaTime;
+                    verticalVelocity -= ((targetVelocity - verticalVelocity) / (targetVelocity * .1f)) * maxVerticalAcceleration * Time.deltaTime;
                 }
                 else
                 {
-                    verticalVelocity += dampenSpeed * Time.deltaTime;
+                    verticalVelocity -= maxVerticalAcceleration * Time.deltaTime;
                 }
             }
             else
             {
-                verticalVelocity = 0;
+                if (verticalVelocity > 0.05f)
+                {
+                    if (verticalVelocity < 0.5f)
+                    {
+                        verticalVelocity -= (verticalVelocity / .5f) * dampenSpeed * Time.deltaTime;
+                    }
+                    else
+                    {
+                        verticalVelocity -= dampenSpeed * Time.deltaTime;
+                    }
+                }
+                else if (verticalVelocity < -0.05f)
+                {
+                    if (verticalVelocity > -0.5f)
+                    {
+                        verticalVelocity += (verticalVelocity / -.5f) * dampenSpeed * Time.deltaTime;
+                    }
+                    else
+                    {
+                        verticalVelocity += dampenSpeed * Time.deltaTime;
+                    }
+                }
+                else
+                {
+                    verticalVelocity = 0;
+                }
             }
         }
+
         // Turning stuff
         angle = Vector3.Angle(velocity.normalized, transform.right);
-        float forwardSpeed;
-        if (angle > 90) { forwardSpeed = -1f* velocity.magnitude * (1f - ((180f - angle)/90f)); }
-        else { forwardSpeed = velocity.magnitude * (1f - (angle / 90f)); }
+
         float targetTurn = turn.value * maxTurnSpeed * (forwardSpeed / 3f);
 
         if (turnSpeed < targetTurn)
@@ -207,10 +230,50 @@ public class ShipControls : MonoBehaviour {
             }
         }
         turnSpeed = Mathf.Clamp(turnSpeed, maxTurnSpeed * -1, maxTurnSpeed);
+
+
+        // SAIL
+        mast.transform.rotation = Quaternion.LookRotation(windDirection);
+        sail.transform.localScale = new Vector3(1f, 1f, 1f + 3f * (windForce / 0.6f));
     }
 
     // Update is called once per frame
     void FixedUpdate () {
+
+
+        Vector3 vel = velocity;
+        if (transform.position.x > max.x)
+        {
+            vel.x *= -1;
+        }
+        if (transform.position.x < min.x)
+        {
+            vel.x *= -1;
+        }
+        if (transform.position.y > max.y)
+        {
+            vel.y *= -1;
+        }
+        if (transform.position.y < min.y)
+        {
+            vel.y *= -1;
+        }
+        if (transform.position.z > max.z)
+        {
+            vel.z *= -1;
+        }
+        if (transform.position.x < min.z)
+        {
+            vel.z *= -1;
+        }
+
+
+        if (vel != velocity)
+        {
+            velocity = vel;
+        }
+
+
 
         transform.position += velocity * Time.deltaTime;
         transform.position += new Vector3(0, verticalVelocity) * Time.deltaTime;
@@ -225,25 +288,25 @@ public class ShipControls : MonoBehaviour {
 
 
         // Standing still movement
-        if (velocity.magnitude < .2f)
+        if (forward.value == -1f)
         {
-            // Strafing
-            Vector3 targetvelocity = new Vector3(strafe.zValue, 0f, strafe.xValue);
+            // Strafing and vertical
+            float yValue = 0f;
+            if (buttonDown.pressed)
+            {
+                yValue -= 1f;
+            } if (buttonUp.pressed)
+            {
+                yValue += 1f;
+            }
+
+            Vector3 targetvelocity = new Vector3(strafe.zValue, yValue, strafe.xValue);
             strafeVelocity += (targetvelocity - strafeVelocity) * strafeAcceleration * Time.fixedDeltaTime;
             transform.Translate( 0.6f * strafeVelocity * Time.fixedDeltaTime);
 
             // Rotation in place
-            if (rotateLeft.pressed && !rotateRight.pressed)
-            {
-                rotationalVelocity = Mathf.Lerp(rotationalVelocity, -20f, .01f);
-            }
-            else if (rotateRight.pressed && !rotateLeft.pressed)
-            {
-                rotationalVelocity = Mathf.Lerp(rotationalVelocity, 20f, .01f);
-            }else
-            {
-                rotationalVelocity = Mathf.Lerp(rotationalVelocity, 0f, .01f);
-            }
+            rotationalVelocity = Mathf.Lerp(rotationalVelocity, rotate.value * 20f, .01f);
+            
             transform.Rotate(0f, Time.fixedDeltaTime * rotationalVelocity, 0f);
         }
         else
