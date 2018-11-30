@@ -145,7 +145,7 @@ public class ShipControls : MonoBehaviour {
         else { forwardSpeed = velocity.magnitude * (1f - (angle / 90f)); }
 
         // Now the same but for vertical
-        if (forwardSpeed != 0f)
+        if (forwardSpeed > 0f)
         {
             if (up.value > 0)
             {
@@ -250,14 +250,7 @@ public class ShipControls : MonoBehaviour {
         {
             vel.x *= -1;
         }
-        if (transform.position.y > max.y)
-        {
-            vel.y *= -1;
-        }
-        if (transform.position.y < min.y)
-        {
-            vel.y *= -1;
-        }
+        
         if (transform.position.z > max.z)
         {
             vel.z *= -1;
@@ -266,11 +259,18 @@ public class ShipControls : MonoBehaviour {
         {
             vel.z *= -1;
         }
-
-
         if (vel != velocity)
         {
             velocity = vel;
+        }
+
+        if (transform.position.y > max.y)
+        {
+            verticalVelocity *= -1;
+        }
+        if (transform.position.y < min.y)
+        {
+            verticalVelocity *= -1;
         }
 
 

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class VRControllerInput : MonoBehaviour {
 
+    public GameObject Tutorial;
+
     [HideInInspector]
     public GameObject currentHeld;
 
@@ -67,6 +69,11 @@ public class VRControllerInput : MonoBehaviour {
 
     private void Update()
     {
+        if (device.GetPressDown(SteamVR_Controller.ButtonMask.ApplicationMenu))
+        {
+            Tutorial.SetActive(!Tutorial.activeSelf);
+        }
+
         if (device.GetHairTriggerUp() && currentHeld != null)
         {
             currentHeld.GetComponent<VRInteractableObject>().Release(this.gameObject);
