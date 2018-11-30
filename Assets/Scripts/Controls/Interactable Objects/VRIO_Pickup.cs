@@ -34,7 +34,7 @@ public class VRIO_Pickup : VRInteractableObject
     {
         if (grabbed)
         {
-            SteamVR_Controller.Input((int)currentController.GetComponent<SteamVR_TrackedObject>().index).TriggerHapticPulse(25);
+            SteamVR_Controller.Input((int)currentController.GetComponent<SteamVR_TrackedObject>().index).TriggerHapticPulse(50);
             velocity = (currentController.transform.position - prevPos) * (1f/Time.fixedDeltaTime);
             prevPos = currentController.transform.position;
         }

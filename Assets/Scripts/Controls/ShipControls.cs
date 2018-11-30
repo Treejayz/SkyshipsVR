@@ -33,7 +33,7 @@ public class ShipControls : MonoBehaviour {
 
     // Vertical variables
     float verticalVelocity = 0;
-    float maxVerticalVelocity = .3f;
+    float maxVerticalVelocity = .7f;
     float maxVerticalAcceleration = 1f;
 
     // turning variables
@@ -68,10 +68,29 @@ public class ShipControls : MonoBehaviour {
 
         Vector3 acceleration = transform.right * ((forward.value + 1f)/2f) * forwardAcceleration;
 
-        if (pitch < ((forward.value + 1f) / 2f))
+        float targetPitch = ((forward.value + 1f) / 2f);
+        if (targetPitch == 0f)
+        {
+            float yValue = 0f;
+            if (buttonDown.pressed)
+            {
+                yValue -= 1f;
+            }
+            if (buttonUp.pressed)
+            {
+                yValue += 1f;
+            }
+
+            Vector3 targetvelocity = new Vector3(strafe.zValue, yValue, strafe.xValue);
+            targetPitch = targetvelocity.magnitude * .4f;
+
+            print(targetPitch);
+        }
+
+        if (pitch < targetPitch)
         {
             pitch += Time.deltaTime * .3f;
-        } else if (pitch > ((forward.value + 1f) / 2f))
+        } else if (pitch > targetPitch)
         {
             pitch -= Time.deltaTime * .3f;
         }
@@ -81,11 +100,11 @@ public class ShipControls : MonoBehaviour {
         velocity += acceleration * Time.deltaTime;
 
         // Now wind stuff
-
-        float angle = Vector3.Angle(windDirection.normalized, transform.right);
-        velocity += transform.right * windForce * Time.deltaTime * (1f - (angle/180f)) * 0.5f;
-        velocity += windDirection.normalized * windForce * Time.deltaTime * 0.5f;
         /*
+        
+        velocity += transform.right * windForce * Time.deltaTime * (1f - (angle/180f)) * 0.5f;
+        velocity += velocity.normalized * windForce * Time.deltaTime * 0.5f;
+        
         float direction = Vector3.Cross(windDirection.normalized, transform.right).y;
         float targetTurnSpeed;
         if (angle < 30f)
@@ -139,17 +158,17 @@ public class ShipControls : MonoBehaviour {
 
         //if (velocity.magnitude > maxVelocity)
 
-
+        float angle = Vector3.Angle(velocity.normalized, transform.right);
         float forwardSpeed;
         if (angle > 90) { forwardSpeed = -1f * velocity.magnitude * (1f - ((180f - angle) / 90f)); }
         else { forwardSpeed = velocity.magnitude * (1f - (angle / 90f)); }
 
         // Now the same but for vertical
-        if (forwardSpeed > 0f)
+        if (((forward.value + 1f) / 2f) > 0f && up.value != 0)
         {
             if (up.value > 0)
             {
-                float targetVelocity = up.value * maxVerticalVelocity * forwardSpeed;
+                float targetVelocity = up.value * maxVerticalVelocity * ((forward.value + 1f) / 2f);
                 if (verticalVelocity >= .9f * targetVelocity)
                 {
                     verticalVelocity += ((targetVelocity - verticalVelocity) / (targetVelocity * .1f)) * maxVerticalAcceleration * Time.deltaTime;
@@ -161,7 +180,7 @@ public class ShipControls : MonoBehaviour {
             }
             else if (up.value < 0)
             {
-                float targetVelocity = up.value * maxVerticalVelocity * forwardSpeed;
+                float targetVelocity = up.value * maxVerticalVelocity * ((forward.value + 1f) / 2f);
                 if (verticalVelocity <= .9f * targetVelocity)
                 {
                     verticalVelocity -= ((targetVelocity - verticalVelocity) / (targetVelocity * .1f)) * maxVerticalAcceleration * Time.deltaTime;
@@ -170,35 +189,35 @@ public class ShipControls : MonoBehaviour {
                 {
                     verticalVelocity -= maxVerticalAcceleration * Time.deltaTime;
                 }
-            }
-            else
+            }  
+        }
+        else
+        {
+            if (verticalVelocity > 0.05f)
             {
-                if (verticalVelocity > 0.05f)
+                if (verticalVelocity < 0.5f)
                 {
-                    if (verticalVelocity < 0.5f)
-                    {
-                        verticalVelocity -= (verticalVelocity / .5f) * dampenSpeed * Time.deltaTime;
-                    }
-                    else
-                    {
-                        verticalVelocity -= dampenSpeed * Time.deltaTime;
-                    }
-                }
-                else if (verticalVelocity < -0.05f)
-                {
-                    if (verticalVelocity > -0.5f)
-                    {
-                        verticalVelocity += (verticalVelocity / -.5f) * dampenSpeed * Time.deltaTime;
-                    }
-                    else
-                    {
-                        verticalVelocity += dampenSpeed * Time.deltaTime;
-                    }
+                    verticalVelocity -= (verticalVelocity / .5f) * dampenSpeed * Time.deltaTime;
                 }
                 else
                 {
-                    verticalVelocity = 0;
+                    verticalVelocity -= dampenSpeed * Time.deltaTime;
                 }
+            }
+            else if (verticalVelocity < -0.05f)
+            {
+                if (verticalVelocity > -0.5f)
+                {
+                    verticalVelocity += (verticalVelocity / -.5f) * dampenSpeed * Time.deltaTime;
+                }
+                else
+                {
+                    verticalVelocity += dampenSpeed * Time.deltaTime;
+                }
+            }
+            else
+            {
+                verticalVelocity = 0;
             }
         }
 
@@ -278,6 +297,12 @@ public class ShipControls : MonoBehaviour {
         transform.position += velocity * Time.deltaTime;
         transform.position += new Vector3(0, verticalVelocity) * Time.deltaTime;
 
+        // Now wind stuff
+
+        float angle = Vector3.Angle(windDirection.normalized, transform.right);
+        transform.position += transform.right * windForce * Time.deltaTime * (1f - (angle / 180f)) * 0.5f;
+        transform.position += windDirection.normalized * windForce * Time.deltaTime * 0.5f;
+
         //transform.Translate(velocity * Time.fixedDeltaTime);
         //transform.Translate(forwardVelocity * Time.fixedDeltaTime, verticalVelocity * Time.fixedDeltaTime, 0);
 
@@ -302,7 +327,7 @@ public class ShipControls : MonoBehaviour {
 
             Vector3 targetvelocity = new Vector3(strafe.zValue, yValue, strafe.xValue);
             strafeVelocity += (targetvelocity - strafeVelocity) * strafeAcceleration * Time.fixedDeltaTime;
-            transform.Translate( 0.6f * strafeVelocity * Time.fixedDeltaTime);
+            transform.Translate( 0.8f * strafeVelocity * Time.fixedDeltaTime);
 
             // Rotation in place
             rotationalVelocity = Mathf.Lerp(rotationalVelocity, rotate.value * 20f, .01f);

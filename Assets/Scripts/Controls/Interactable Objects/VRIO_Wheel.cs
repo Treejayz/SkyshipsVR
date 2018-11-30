@@ -64,7 +64,7 @@ public class VRIO_Wheel : VRInteractableObject
                 WheelMesh.transform.localRotation = Quaternion.Euler(turnAmount, 0f, 0f);
             }
 
-            if ((int)turnAmount / 45 != knotches)
+            if ((int)turnAmount / 45 != knotches && turnAmount != (360f * numTurns) && turnAmount != (-360f * numTurns))
             {
                 knotches = (int)turnAmount / 45;
                 GetComponent<AudioSource>().Play();

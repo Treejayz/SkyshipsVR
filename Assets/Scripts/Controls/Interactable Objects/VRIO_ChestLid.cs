@@ -27,6 +27,7 @@ public class VRIO_ChestLid : VRInteractableObject
     public override void Release(GameObject controller)
     {
         base.Release(controller);
+        StopCoroutine("Return");
         StartCoroutine("Return");
     }
 
@@ -51,30 +52,37 @@ public class VRIO_ChestLid : VRInteractableObject
         float angularSpeed = 0f;
         while (true)
         {
-            if (openAmount > -1f && angularSpeed > 0f)
+            if (openAmount > 0f && angularSpeed >= 0f)
             {
-                if (angularSpeed < 10f)
+                if (angularSpeed < 40f)
                 {
                     break;
                 }
                 else
                 {
+                    print(openAmount + ", " + angularSpeed);
+                    openAmount = 0f;
+                    float volume = angularSpeed / 540f;
+                    Mathf.Clamp01(volume);
+                    GetComponent<AudioSource>().volume = volume;
                     GetComponent<AudioSource>().Play();
-                    angularSpeed *= -0.8f;
+                    angularSpeed *= -0.6f;
                 }
             }
+            else
+            {
 
-            if (angularSpeed < 0)
-            {
-                angularSpeed += 500f * Time.deltaTime;
-            } else
-            {
-                angularSpeed += 360f * Time.deltaTime;
+                if (angularSpeed < 0)
+                {
+                    angularSpeed += 360f * Time.deltaTime;
+                }
+                else
+                {
+                    angularSpeed += 360f * Time.deltaTime;
+                }
             }
-
-            openAmount += angularSpeed * Time.deltaTime;
-            openAmount = Mathf.Clamp(openAmount, -80f, 0f);
             transform.localRotation = Quaternion.Euler(openAmount, 0f, 0f);
+            openAmount += angularSpeed * Time.deltaTime;
 
             yield return new WaitForEndOfFrame();
         }

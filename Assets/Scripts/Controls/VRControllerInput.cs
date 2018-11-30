@@ -12,6 +12,8 @@ public class VRControllerInput : MonoBehaviour {
     Vector3 regularTriggerSize;
     Vector3 holdingTriggerSize;
 
+    float holdTime = 0f;
+
     protected SteamVR_TrackedObject trackedObj;
     public SteamVR_Controller.Device device
     {
@@ -73,6 +75,21 @@ public class VRControllerInput : MonoBehaviour {
         {
             Tutorial.SetActive(!Tutorial.activeSelf);
         }
+
+        if (device.GetPress(SteamVR_Controller.ButtonMask.ApplicationMenu))
+        {
+            holdTime += Time.deltaTime;
+            if (holdTime > 5f)
+            {
+                SteamVR_LoadLevel.Begin("Test");
+            }
+        }
+
+        if (device.GetPressUp(SteamVR_Controller.ButtonMask.ApplicationMenu))
+        {
+            holdTime = 0f;
+        }
+
 
         if (device.GetHairTriggerUp() && currentHeld != null)
         {
