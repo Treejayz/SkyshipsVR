@@ -93,7 +93,7 @@ public class VRIO_Crank : VRInteractableObject
 
     IEnumerator Snap()
     {
-        angularVelocity = Mathf.Clamp(angularVelocity, -1440f, 1440f);
+        angularVelocity = Mathf.Clamp(angularVelocity, -720f, 720f);
         if (angularVelocity > 0)
         {
             while (angularVelocity > 0)

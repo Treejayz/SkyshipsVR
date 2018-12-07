@@ -84,7 +84,6 @@ public class ShipControls : MonoBehaviour {
             Vector3 targetvelocity = new Vector3(strafe.zValue, yValue, strafe.xValue);
             targetPitch = targetvelocity.magnitude * .4f;
 
-            print(targetPitch);
         }
 
         if (pitch < targetPitch)
@@ -367,8 +366,12 @@ public class ShipControls : MonoBehaviour {
     public void Collide(Vector3 hitNormal)
     {
         Vector3 totalVelocity = velocity + new Vector3(0, verticalVelocity);
-
-        Vector3 impulse = hitNormal.normalized * totalVelocity.magnitude * 0.7f;
+        float magnitude = totalVelocity.magnitude;
+        if (magnitude < 2f)
+        {
+            magnitude = 2f;
+        }
+        Vector3 impulse = hitNormal.normalized * magnitude * 0.7f;
 
         verticalVelocity = impulse.y;
         velocity = new Vector3(impulse.x, 0, impulse.z);
